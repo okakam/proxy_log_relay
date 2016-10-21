@@ -1,0 +1,7 @@
+{
+    "require": {
+        "elasticsearch/elasticsearch": "~2.0@beta",
+        "monolog/monolog": "~1.0",
+        "jeremykendall/php-domain-parser": "~3.0"
+    }
+}

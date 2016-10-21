@@ -1,0 +1,21 @@
+{
+  "name": "proxy_log_relay",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "gr-okazaki <masanori.okazaki@gmo-research.jp>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/GMORsys/proxy_log_relay",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "d3": "^4.2.7"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "proxy_log_relay",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node node_modules/bower/bin/bower install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GMORsys/proxy_log_relay.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GMORsys/proxy_log_relay/issues"
+  },
+  "homepage": "https://github.com/GMORsys/proxy_log_relay#readme",
+  "dependencies": {
+    "bower": "^1.7.9"
+  }
+}

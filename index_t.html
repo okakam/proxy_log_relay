@@ -1,0 +1,176 @@
+<!DOCTYPE>
+
+<html>
+
+<head>
+    <title>Proxy Link</title>
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
+
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.js"></script>
+
+    <!-- for testing with local version of cytoscape.js -->
+    <!--<script src="../cytoscape.js/build/cytoscape.js"></script>-->
+
+    <style>
+        body {
+            font-family: helvetica;
+            font-size: 14px;
+        }
+
+        #cy {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 999;
+            margin-top: 30px;
+        }
+
+        h1 {
+            opacity: 0.5;
+            font-size: 1em;
+        }
+    </style>
+
+    <script>
+        var DATA_DIR_BASE = 'data/';
+
+        $(function () {
+            var dates = [];
+
+            $.getJSON('GetDates.php', function (data) {
+                dates = data.filenames;
+                $.each(dates, function (index, data) {
+                    $element = $('<option>').text(data).attr('value', data);
+                    $('#date-select').append($element);
+                });
+            });
+
+            $('#displsy-graph').click(function () {
+                drawGraph();
+            });
+
+            for(var i = 0 ; i <= 23 ; i++) {
+                var numStr = ('00' + i).slice(-2);
+                $('#hr-select').append('<option value="'+ numStr + '">' + numStr + '</option>')
+            }
+        });
+
+        var cy = null;
+        var drawGraph = function () {
+            var nodes = null;
+            var elements = null;
+            var selectedDate = $('#date-select').val();
+            var numNoes = $('#num-nodes-select').val();
+            var hr = $('#hr-select').val();
+            $.ajaxSetup({async: false});
+            $.getJSON(DATA_DIR_BASE + selectedDate + '/' + numNoes + '_' + hr + '_nodes.json', function (data) {
+                nodes = data;
+            });
+            $.getJSON(DATA_DIR_BASE + selectedDate + '/' + numNoes + '_' + hr + '_elements.json', function (data) {
+                elements = data;
+            });
+            $.ajaxSetup({async: true});
+
+            cy = window.cy = cytoscape({
+                container: document.getElementById('cy'),
+
+                boxSelectionEnabled: false,
+                autounselectify: true,
+
+                layout: {
+                    name: 'cose',
+                    padding: 5,
+                    fit: true,
+                    randomize: true
+                },
+
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'content': 'data(name)',
+                            'text-opacity': 0.9,
+                            'text-valign': 'center',
+                            'text-halign': 'right',
+                            'background-color': '#11479e',
+                            'width': 'data(weight)',
+                            'height': 'data(weight)',
+                        }
+                    },
+
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 'data(weight)',
+                            'target-arrow-shape': 'triangle',
+                            'line-color': '#9dbaea',
+                            'target-arrow-color': '#9dbaea',
+                            'curve-style': 'bezier'
+                        }
+                    },
+                    {
+                        selector: ':selected',
+                        style: {
+                            'background-color': 'black',
+                            'line-color': 'black',
+                            'target-arrow-color': 'black',
+                            'source-arrow-color': 'black'
+                        }
+                    },
+                    {
+                        selector: '.faded',
+                        style: {
+                            'opacity': 0.25,
+                            'text-opacity': 0
+                        }
+                    }
+                ],
+
+                elements: {
+                    nodes: nodes,
+                    edges: elements,
+                },
+            });
+
+            cy.on('tap', 'node', function (e) {
+                var node = e.cyTarget;
+                var neighborhood = node.neighborhood().add(node);
+
+                cy.elements().addClass('faded');
+                neighborhood.removeClass('faded');
+            });
+
+            cy.on('tap', function (e) {
+                if (e.cyTarget === cy) {
+                    cy.elements().removeClass('faded');
+                }
+            });
+        };
+    </script>
+</head>
+
+<body>
+<div id="cy"></div>
+<p>
+    date :
+    <select id="date-select" name="date-select">
+    </select>
+    Nodes :
+    <select id="num-nodes-select" name="num-nodes">
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="500">500</option>
+    </select>
+    Time :
+    <select id="hr-select", name="hr-select">
+    </select>
+    <button id="displsy-graph">Displsy</button>
+    <div id="diplay-hr"></div>
+</p>
+</body>
+
+</html>

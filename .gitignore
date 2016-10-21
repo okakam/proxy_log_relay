@@ -1,0 +1,7 @@
+vendor/
+.idea/
+data*/
+tmp/
+node_modules/
+bower_components/
+p10000*
