@@ -33,6 +33,7 @@
 <div id="svg_base" class="">
     <svg id="svg_floor"></svg>
 </div>
+<!--
 <p>
     date :
     <select id="date-select" name="date-select">
@@ -49,24 +50,31 @@
     <button id="displsy-graph">Displsy</button>
 <div id="diplay-hr"></div>
 </p>
+-->
 <script>
     $(function () {
     });
 
     var svg = d3.select("svg");
-//    var width = +svg.attr("width");
-//    var height = +svg.attr("height");
+    //    var width = +svg.attr("width");
+    //    var height = +svg.attr("height");
     var width = +window.innerWidth;
     var height = +window.innerHeight;
+    svg.style('width', width);
+    svg.style('height', height);
 
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    var simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function (d) {
-                return d.id;
-            }))
-            .force("charge", d3.forceManyBody())
-            .force("center", d3.forceCenter(width / 2, height / 2));
+    var simulation = d3.forceSimulation();
+    simulation.force("link", d3.forceLink().id(function (d) {
+        return d.id;
+    }));
+    simulation.force("charge", d3.forceManyBody());
+    simulation.force("charge")
+            .strength(function () {
+                return -100;
+            });
+    simulation.force("center", d3.forceCenter(width / 2, height / 2));
 
     d3.json("miserables.json", function (error, graph) {
         if (error) throw error;
@@ -77,7 +85,7 @@
                 .data(graph.links)
                 .enter().append("line")
                 .attr("stroke-width", function (d) {
-                    return Math.sqrt(d.value);
+                    return Math.sqrt(d.value) * 2;
                 });
 
         var node = svg.append("g")
@@ -85,7 +93,9 @@
                 .selectAll("circle")
                 .data(graph.nodes)
                 .enter().append("circle")
-                .attr("r", 5)
+                .attr("r", function (d) {
+                    return d.size;
+                })
                 .attr("fill", function (d) {
                     return color(d.group);
                 })
